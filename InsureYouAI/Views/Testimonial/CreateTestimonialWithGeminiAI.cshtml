@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewData["Title"] = "CreateTestimonialWithGeminiAI";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var testimonial = ViewBag.Testimonial as List<Testimonial>;
+    var error = ViewBag.Error as string;
+}
+
+<hr />
+
+<div class="container mt-5">
+    <h2 class="mb-4">🤖 Google Gemini ile Müşteri Yorum ve Değerlendirme İçerikleri</h2>
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="alert alert-danger">
+            <strong>Hata:</strong> @error
+        </div>
+    }
+    else if (testimonial != null && testimonial.Any())
+    {
+        <ul class="list-group">
+
+                @foreach (var item in testimonial)
+                {
+                    <li class="list-group-item">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <img src="@item.ImageURL"
+                                 width="60"
+                                 height="60"
+                                 style="border-radius:50%; object-fit:cover;" />
+
+                            <div>
+                                <h5 class="mb-0">@item.NameSurname</h5>
+                                <small class="text-muted">@item.Title</small>
+                                <p class="mb-0 mt-1">@item.CommentDetail</p>
+                            </div>
+
+                        </div>
+
+                    </li>
+                }
+            </ul>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Henüz Gemini tarafından oluşturulmuş bir yorum bulunamadı.
+        </div>
+    }
+</div>
+

@@ -1,0 +1,54 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using VirasureYouAI.Context;
+using VirasureYouAI.Entities;
+
+namespace VirasureYouAI.Controllers
+{
+    public class TrailerVideoController : Controller
+    {
+        private readonly VirasureContext _context;
+
+        public TrailerVideoController(VirasureContext context)
+        {
+            _context = context;
+        }
+
+        public IActionResult TrailerVideoList()
+        {
+            var values = _context.TrailerVideos.ToList();
+            return View(values);
+        }
+        [HttpGet]
+        public IActionResult CreateTrailerVideo()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult CreateTrailerVideo(TrailerVideo trailerVideo)
+        {
+            _context.TrailerVideos.Add(trailerVideo);
+            _context.SaveChanges();
+            return RedirectToAction("TrailerVideoList");
+        }
+        [HttpGet]
+        public IActionResult UpdateTrailerVideo(int id)
+        {
+            var value = _context.TrailerVideos.Find(id);
+            return View(value);
+        }
+        [HttpPost]
+        public IActionResult UpdateTrailerVideo(TrailerVideo trailerVideo)
+        {
+            _context.TrailerVideos.Update(trailerVideo);
+            _context.SaveChanges();
+            return RedirectToAction("TrailerVideoList");
+        }
+        public IActionResult DeleteTrailerVideo(int id)
+        {
+            var value = _context.TrailerVideos.Find(id);
+            _context.TrailerVideos.Remove(value);
+            _context.SaveChanges();
+            return RedirectToAction("TrailerVideoList");
+        }
+    }
+}

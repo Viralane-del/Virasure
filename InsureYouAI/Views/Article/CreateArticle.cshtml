@@ -1,0 +1,549 @@
+﻿@model Article
+@{
+    ViewData["Title"] = "CreateArticle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .article-form-card {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.02);
+        overflow: hidden;
+        position: relative;
+    }
+
+        .article-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(96,165,250,0.45), transparent);
+        }
+
+    .article-form-body {
+        padding: 1.75rem 2rem;
+    }
+
+    /* Header */
+    .article-form-header {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .article-form-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: rgba(59,130,246,0.1);
+        border: 1px solid rgba(59,130,246,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #60a5fa;
+        font-size: 1.1rem;
+    }
+
+    .article-form-header h5 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #e8e8f0;
+        margin: 0;
+    }
+
+    .article-form-header p {
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.3);
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+    }
+
+    .form-divider {
+        margin: 0 0 1.5rem;
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+    }
+
+    /* Section label */
+    .form-section-label {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.28);
+        margin-bottom: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .form-section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.05);
+        }
+
+    /* Field label */
+    .field-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: rgba(255,255,255,0.38);
+        margin-bottom: 0.45rem;
+    }
+
+        .field-label .req-dot {
+            width: 5px;
+            height: 5px;
+            background: #f87171;
+            border-radius: 50%;
+        }
+
+    /* Input wrap */
+    .input-wrap {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255,255,255,0.22);
+        font-size: 0.82rem;
+        pointer-events: none;
+        transition: color 0.2s;
+        z-index: 2;
+    }
+
+    .input-wrap:focus-within .input-icon {
+        color: #60a5fa;
+    }
+
+    /* Text input */
+    .form-input {
+        width: 100%;
+        background: rgba(255,255,255,0.04) !important;
+        border: 1px solid rgba(255,255,255,0.09) !important;
+        border-radius: 11px !important;
+        color: #e8e8f0 !important;
+        padding: 0.68rem 1rem 0.68rem 2.3rem !important;
+        font-size: 0.84rem !important;
+        transition: all 0.2s ease;
+    }
+
+        .form-input::placeholder {
+            color: rgba(255,255,255,0.18) !important;
+        }
+
+        .form-input:focus {
+            outline: none !important;
+            border-color: rgba(59,130,246,0.4) !important;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.07) !important;
+            background: rgba(255,255,255,0.06) !important;
+        }
+
+    /* ── Dark Select ── */
+    .form-select-dark {
+        width: 100%;
+        background-color: rgba(255,255,255,0.04) !important;
+        border: 1px solid rgba(255,255,255,0.09) !important;
+        border-radius: 11px !important;
+        color: #e8e8f0 !important;
+        padding: 0.68rem 2.5rem 0.68rem 2.3rem !important;
+        font-size: 0.84rem !important;
+        transition: all 0.2s ease;
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        /* custom arrow */
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='rgba(255,255,255,0.3)' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.9rem center !important;
+    }
+
+        .form-select-dark:focus {
+            outline: none !important;
+            border-color: rgba(59,130,246,0.4) !important;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.07) !important;
+            background-color: rgba(255,255,255,0.06) !important;
+            color: #e8e8f0 !important;
+        }
+
+        .form-select-dark option {
+            background: #1e2235 !important;
+            color: #e8e8f0 !important;
+            padding: 6px 12px;
+        }
+
+            .form-select-dark option:disabled {
+                color: rgba(255,255,255,0.3) !important;
+            }
+
+    /* Input hint */
+    .input-hint {
+        font-size: 0.67rem;
+        color: rgba(255,255,255,0.2);
+        margin-top: 0.35rem;
+        padding-left: 2px;
+    }
+
+    /* Image preview */
+    .img-preview-wrap {
+        margin-top: 0.6rem;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.07);
+        background: rgba(255,255,255,0.02);
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.2);
+    }
+
+        .img-preview-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    /* CKEditor dark */
+    .ckeditor-wrap {
+        border-radius: 11px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.09);
+    }
+
+    .cke {
+        border: none !important;
+        background: #111827 !important;
+    }
+
+    .cke_top {
+        background: #1e2235 !important;
+        border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+    }
+
+    .cke_bottom {
+        background: #1e2235 !important;
+        border-top: 1px solid rgba(255,255,255,0.07) !important;
+    }
+
+    .cke_button:hover {
+        background: rgba(255,255,255,0.08) !important;
+        border-radius: 4px;
+    }
+
+    .cke_button_icon {
+        filter: invert(1) brightness(1.4);
+    }
+
+    .cke_contents {
+        background: #0d1117 !important;
+    }
+
+    .cke_wysiwyg_frame, .cke_wysiwyg_div {
+        background: #0d1117 !important;
+        color: #e8e8f0 !important;
+    }
+
+    .cke_toolbar_separator {
+        background: rgba(255,255,255,0.1) !important;
+    }
+
+    .cke_combo_button {
+        background: rgba(255,255,255,0.04) !important;
+        border-color: rgba(255,255,255,0.1) !important;
+    }
+
+    /* Form actions */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-top: 1.75rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0.68rem 1.5rem;
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: #1a1a2e;
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        border: none;
+        border-radius: 11px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 3px 14px rgba(59,130,246,0.25);
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(59,130,246,0.38);
+        }
+
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0.68rem 1.2rem;
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.4);
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 11px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .btn-cancel:hover {
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.65);
+        }
+
+    /* Grid */
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @@media (max-width: 640px) {
+        .form-grid-2 {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .mb-form {
+        margin-bottom: 1.1rem;
+    }
+
+    /* Select-in-grid: iki select yan yana */
+    .form-grid-select {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @@media (max-width: 640px) {
+        .form-grid-select {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="article-form-card">
+    <div class="article-form-body">
+
+        <!-- Header -->
+        <div class="article-form-header">
+            <div class="article-form-icon">
+                <i class="bi bi-file-earmark-plus-fill"></i>
+            </div>
+            <div>
+                <h5>Yeni Makale Oluştur</h5>
+                <p>Makale bilgilerini doldurun</p>
+            </div>
+        </div>
+
+        <hr class="form-divider" />
+
+        <form method="post" id="articleForm">
+            <input type="hidden" asp-for="ArticleId" />
+
+            <!-- Temel Bilgiler -->
+            <div class="form-section-label">Temel Bilgiler</div>
+
+            <div class="mb-form">
+                <label class="field-label">
+                    Başlık <span class="req-dot"></span>
+                </label>
+                <div class="input-wrap">
+                    <input type="text"
+                           class="form-input"
+                           asp-for="Title"
+                           placeholder="Makale başlığını girin..."
+                           autocomplete="off" />
+                    <i class="bi bi-fonts input-icon"></i>
+                </div>
+            </div>
+
+            <!-- Kategori + Yazar yan yana -->
+            <div class="form-grid-select mb-form">
+                <div>
+                    <label class="field-label">
+                        Kategori <span class="req-dot"></span>
+                    </label>
+                    <div class="input-wrap">
+                        <select class="form-select-dark"
+                                asp-items="ViewBag.Categories"
+                                asp-for="CategoryId">
+                            <option value="" disabled selected>Kategori Seçiniz</option>
+                        </select>
+                        <i class="bi bi-tags input-icon"></i>
+                    </div>
+                    <p class="input-hint">Makalenin kategorisini seçiniz.</p>
+                </div>
+                <div>
+                    <label class="field-label">
+                        Yazar <span class="req-dot"></span>
+                    </label>
+                    <div class="input-wrap">
+                        <select class="form-select-dark"
+                                asp-items="ViewBag.Author"
+                                asp-for="AppUserId">
+                            <option value="" disabled selected>Yazar Seçiniz</option>
+                        </select>
+                        <i class="bi bi-person input-icon"></i>
+                    </div>
+                    <p class="input-hint">Makalenin yazarını seçiniz.</p>
+                </div>
+            </div>
+
+            <!-- Görsel Bilgiler -->
+            <div class="form-section-label" style="margin-top:1.5rem;">Görsel Bilgiler</div>
+
+            <div class="form-grid-2 mb-form">
+                <div>
+                    <label class="field-label">Kapak Fotoğrafı URL</label>
+                    <div class="input-wrap">
+                        <input type="text"
+                               class="form-input"
+                               id="coverImageInput"
+                               asp-for="CoverImageURL"
+                               placeholder="https://..." />
+                        <i class="bi bi-image input-icon"></i>
+                    </div>
+                    <div class="img-preview-wrap" id="coverPreview">
+                        @if (!string.IsNullOrEmpty(Model?.CoverImageURL))
+                        {
+                            <img src="@Model.CoverImageURL" alt="Kapak" />
+                        }
+                        else
+                        {
+                            <span>Önizleme</span>
+                        }
+                    </div>
+                </div>
+                <div>
+                    <label class="field-label">Detay Kapak Görseli URL</label>
+                    <div class="input-wrap">
+                        <input type="text"
+                               class="form-input"
+                               id="mainImageInput"
+                               asp-for="MainImageURl"
+                               placeholder="https://..." />
+                        <i class="bi bi-card-image input-icon"></i>
+                    </div>
+                    <div class="img-preview-wrap" id="mainPreview">
+                        @if (!string.IsNullOrEmpty(Model?.MainImageURl))
+                        {
+                            <img src="@Model.MainImageURl" alt="Detay" />
+                        }
+                        else
+                        {
+                            <span>Önizleme</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- İçerik -->
+            <div class="form-section-label" style="margin-top:1.5rem;">İçerik</div>
+
+            <div class="mb-form">
+                <label class="field-label">
+                    Makale İçeriği <span class="req-dot"></span>
+                </label>
+                <div class="ckeditor-wrap">
+                    <textarea id="Content" asp-for="Content"></textarea>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-check-lg"></i>
+                    Makaleyi Kaydet
+                </button>
+                <a href="/Article/ArticleList" class="btn-cancel">
+                    <i class="bi bi-x-lg"></i>
+                    İptal
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script src="https://cdn.ckeditor.com/4.20.1/standard-all/ckeditor.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        if (document.getElementById("Content")) {
+            CKEDITOR.replace("Content", {
+                height: 420,
+                extraPlugins: 'colorbutton,font',
+                toolbar: [
+                    { name: 'document',    items: ['Source', '-', 'Preview'] },
+                    { name: 'clipboard',   items: ['Cut', 'Copy', 'Paste', '-', 'Undo', 'Redo'] },
+                    { name: 'styles',      items: ['Format', 'Font', 'FontSize'] },
+                    { name: 'colors',      items: ['TextColor', 'BGColor'] },
+                    { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
+                    { name: 'paragraph',   items: ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'] },
+                    { name: 'insert',      items: ['Image', 'Table', 'Link', 'Unlink'] },
+                    { name: 'tools',       items: ['Maximize'] }
+                ]
+            });
+        }
+
+        CKEDITOR.on('instanceReady', function (ev) {
+            const body = ev.editor.document.getBody();
+            body.setStyle('background-color', '#0d1117');
+            body.setStyle('color', '#e8e8f0');
+            body.setStyle('font-family', 'Segoe UI, sans-serif');
+            body.setStyle('font-size', '14px');
+            body.setStyle('padding', '12px');
+        });
+
+        function bindPreview(inputId, previewId) {
+            const input   = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            if (!input || !preview) return;
+
+            input.addEventListener('input', function () {
+                const url = this.value.trim();
+                if (url) {
+                    preview.innerHTML = `<img src="${url}" alt="Önizleme"
+                        onerror="this.parentElement.innerHTML='<span>Geçersiz URL</span>'"
+                        style="width:100%;height:100%;object-fit:cover;" />`;
+                } else {
+                    preview.innerHTML = '<span>Önizleme</span>';
+                }
+            });
+        }
+
+        bindPreview('coverImageInput', 'coverPreview');
+        bindPreview('mainImageInput',  'mainPreview');
+    });
+</script>

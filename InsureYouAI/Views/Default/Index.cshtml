@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_UILayout.cshtml";
+}
+
+@await Component.InvokeAsync("UILayoutSectionSlider")
+
+@await Component.InvokeAsync("UILayoutSectionAbout")
+
+@await Component.InvokeAsync("UILayoutInsureService")
+
+@await Component.InvokeAsync("UILayoutSectionTrailerVideo")
+
+@await Component.InvokeAsync("UILayoutSectionService")
+
+@await Component.InvokeAsync("UILayoutCounterStatistic")
+
+@await Component.InvokeAsync("UILayoutSectionSkill")
+
+@await Component.InvokeAsync("UILayoutSectionPricingPlan")
+
+@await Component.InvokeAsync("UILayoutSectionTestimonial")
+
+@await Component.InvokeAsync("UILayoutSectionGallery")
+
+@await Component.InvokeAsync("UILayoutSectionBlog")
+
+@await Html.PartialAsync("SendMessage")
+
+

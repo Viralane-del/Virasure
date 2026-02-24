@@ -1,0 +1,37 @@
+﻿@using VirasureYouAI.Entities
+@model List<Skill>
+<section id="skill" class="skill-area p-relative fix pt-120">
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-lg-6 col-md-12 col-sm-12 pr-30">
+                <div class="skills-img" data-aos="fade-right" data-aos-duration="1000">
+                    <img src="/defaultimages/skill/skills-img.png" alt="img" class="img" />
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="skills-content s-about-content" data-aos="fade-left" data-aos-duration="1000">
+                    <div class="skills-title pb-20">
+                        <h2>Alanımızda Lider Çözümler Sunuyoruz</h2>
+                    </div>
+                    <p>
+                        Risk yönetiminden poliçe süreçlerine kadar her aşamada,
+                        şeffaf, hızlı ve size özel sigorta çözümleriyle fark yaratıyoruz.
+                    </p>
+                    <div class="mt-20">
+                        <div class="skills">
+                            @foreach (var item in Model)
+                            {
+                                <div class="skill mb-30">
+                                    <div class="skill-name">@item.SkillName</div>
+                                    <div class="skill-bar">
+                                        <div class="skill-per" id="@item.SkillLevel"></div>
+                                    </div>
+                                </div>
+                            }                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

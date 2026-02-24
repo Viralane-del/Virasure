@@ -1,0 +1,42 @@
+﻿@model List<VirasureYouAI.Entities.Comment>
+
+<div class="comment__wrap pb-45">
+
+    <div class="comment__wrap-title">
+        <h5>Yorumlar (@(Model?.Count ?? 0))</h5>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var item in Model)
+        {
+            <div class="single__comment mb-35 d-flex">
+
+                <!-- Avatar -->
+                <div class="comments-avatar me-3">
+                    <img src="@(item.AppUser?.ImageURL ?? "/images/default-user.png")"
+                         style="width:80px;height:80px;border-radius:50%;object-fit:cover;" />
+                </div>
+
+                <!-- Yorum İçeriği -->
+                <div class="comment-text">
+
+                    <div class="avatar-name mb-2">
+                        <h5>@(item.AppUser?.Name ?? "Anonim") @(item.AppUser?.Surname ?? "")</h5>
+                        <span>@item.CommentDate.ToString("dd MMMM yyyy")</span>
+                    </div>
+
+                    <!-- ⭐ BURASI YORUM METNİ -->
+                    <p>@item.CommentDetail</p>
+
+                </div>
+
+            </div>
+        }
+    }
+    else
+    {
+        <p>Henüz yorum yapılmamış.</p>
+    }
+
+</div>

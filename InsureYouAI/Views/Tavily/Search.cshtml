@@ -1,0 +1,657 @@
+﻿@{
+    ViewData["Title"] = "Web Arama";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    // TavilyRaw JSON'ı parse et
+    var tavilyResults = new List<dynamic>();
+    string tavilyAnswer = "";
+    if (ViewBag.TavilyRaw != null)
+    {
+        try
+        {
+            dynamic parsed = Newtonsoft.Json.JsonConvert.DeserializeObject((string)ViewBag.TavilyRaw);
+            tavilyAnswer = parsed?.answer ?? "";
+            if (parsed?.results != null)
+            {
+                foreach (var r in parsed.results)
+                    tavilyResults.Add(r);
+            }
+        }
+        catch { }
+    }
+}
+
+<style>
+    .search-card {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+        overflow: hidden;
+        position: relative;
+        max-width: 100%;
+    }
+
+        .search-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(14,165,233,0.5), rgba(168,85,247,0.3), transparent);
+        }
+
+    .search-body {
+        padding: 1.75rem 2rem;
+    }
+
+    /* Header */
+    .search-page-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .search-header-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, rgba(14,165,233,0.2), rgba(168,85,247,0.1));
+        border: 1px solid rgba(14,165,233,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: #38bdf8;
+        animation: glow 3s ease-in-out infinite;
+    }
+
+    @@keyframes glow {
+        0%, 100% {
+            box-shadow: 0 0 18px rgba(14,165,233,0.1);
+        }
+
+        50% {
+            box-shadow: 0 0 28px rgba(14,165,233,0.25);
+        }
+    }
+
+    .search-header-text h5 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #e8e8f0;
+        margin: 0;
+    }
+
+    .search-header-text p {
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.3);
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+    }
+
+    .tavily-badge {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        background: linear-gradient(135deg, rgba(14,165,233,0.15), rgba(168,85,247,0.1));
+        color: #38bdf8;
+        border: 1px solid rgba(14,165,233,0.25);
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    .tavily-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #0ea5e9;
+        box-shadow: 0 0 6px rgba(14,165,233,0.8);
+        animation: blink 1.5s ease-in-out infinite;
+    }
+
+    @@keyframes blink {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.3;
+        }
+    }
+
+    /* Search input */
+    .search-form {
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .search-input-wrap {
+        position: relative;
+        flex: 1;
+    }
+
+    .search-icon-inner {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255,255,255,0.25);
+        font-size: 0.85rem;
+        pointer-events: none;
+        transition: color 0.2s;
+    }
+
+    .search-input-wrap:focus-within .search-icon-inner {
+        color: #38bdf8;
+    }
+
+    .search-main-input {
+        width: 100%;
+        background: rgba(255,255,255,0.04) !important;
+        border: 1px solid rgba(255,255,255,0.09) !important;
+        border-radius: 12px !important;
+        color: #e8e8f0 !important;
+        padding: 0.75rem 1rem 0.75rem 2.5rem !important;
+        font-size: 0.88rem !important;
+        transition: all 0.2s ease;
+    }
+
+        .search-main-input::placeholder {
+            color: rgba(255,255,255,0.2) !important;
+        }
+
+        .search-main-input:focus {
+            outline: none !important;
+            border-color: rgba(14,165,233,0.4) !important;
+            box-shadow: 0 0 0 3px rgba(14,165,233,0.07) !important;
+            background: rgba(255,255,255,0.06) !important;
+        }
+
+    .btn-search {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0.72rem 1.4rem;
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(135deg, #0ea5e9, #2563eb);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 3px 14px rgba(14,165,233,0.25);
+        white-space: nowrap;
+    }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(14,165,233,0.38);
+        }
+
+        .btn-search:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+    .search-hint {
+        font-size: 0.67rem;
+        color: rgba(255,255,255,0.2);
+        margin-top: 0.4rem;
+        padding-left: 2px;
+    }
+
+    /* Quick chips */
+    .quick-chips {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+    }
+
+    .quick-chip {
+        font-size: 0.67rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 6px;
+        padding: 3px 10px;
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+    }
+
+        .quick-chip:hover {
+            background: rgba(14,165,233,0.1);
+            border-color: rgba(14,165,233,0.25);
+            color: #38bdf8;
+        }
+
+    .section-divider {
+        margin: 1.75rem 0 1.25rem;
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+    }
+
+    /* Query tag */
+    .query-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(14,165,233,0.08);
+        border: 1px solid rgba(14,165,233,0.2);
+        border-radius: 8px;
+        padding: 4px 12px;
+        font-size: 0.75rem;
+        color: #38bdf8;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+    }
+
+    /* Gemini summary box */
+    .gemini-box {
+        background: rgba(168,85,247,0.05);
+        border: 1px solid rgba(168,85,247,0.15);
+        border-radius: 14px;
+        padding: 1.25rem 1.4rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .gemini-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168,85,247,0.35), transparent);
+        }
+
+    .gemini-box-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.85rem;
+    }
+
+        .gemini-box-header span {
+            font-size: 0.67rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: #c084fc;
+        }
+
+    .gemini-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: rgba(168,85,247,0.15);
+        border: 1px solid rgba(168,85,247,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        color: #c084fc;
+    }
+
+    .gemini-content {
+        font-size: 0.84rem;
+        color: rgba(255,255,255,0.7);
+        line-height: 1.75;
+        white-space: pre-wrap;
+    }
+
+    /* Tavily answer box */
+    .tavily-answer-box {
+        background: rgba(14,165,233,0.05);
+        border: 1px solid rgba(14,165,233,0.15);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .tavily-answer-label {
+        font-size: 0.64rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: #38bdf8;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .tavily-answer-text {
+        font-size: 0.82rem;
+        color: rgba(255,255,255,0.6);
+        line-height: 1.65;
+    }
+
+    /* Section label */
+    .results-section-label {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.28);
+        margin-bottom: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .results-section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.05);
+        }
+
+    /* Result cards */
+    .result-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+
+    .result-item {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        transition: all 0.18s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .result-item:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(14,165,233,0.2);
+            transform: translateX(3px);
+        }
+
+    .result-item-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .result-title {
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: #c8d8f0;
+        line-height: 1.4;
+        flex: 1;
+    }
+
+    .result-score {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 6px;
+        background: rgba(34,197,94,0.08);
+        border: 1px solid rgba(34,197,94,0.2);
+        color: #4ade80;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .result-url {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.68rem;
+        color: #38bdf8;
+        text-decoration: none;
+        margin-bottom: 0.5rem;
+        opacity: 0.75;
+        transition: opacity 0.15s;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+        .result-url:hover {
+            opacity: 1;
+        }
+
+    .result-content {
+        font-size: 0.77rem;
+        color: rgba(255,255,255,0.38);
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* No results / Error */
+    .empty-search {
+        padding: 3rem;
+        text-align: center;
+        color: rgba(255,255,255,0.2);
+        font-size: 0.82rem;
+    }
+
+    .empty-search-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .error-strip {
+        background: rgba(248,113,113,0.08);
+        border: 1px solid rgba(248,113,113,0.2);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.78rem;
+        color: #f87171;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Loading spinner */
+    .btn-search .spinner {
+        display: none;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<div class="search-card">
+    <div class="search-body">
+
+        <!-- Header -->
+        <div class="search-page-header">
+            <div class="search-header-icon">
+                <i class="bi bi-search"></i>
+            </div>
+            <div class="search-header-text">
+                <h5>Web Arama</h5>
+                <p>Tavily AI destekli gerçek zamanlı arama</p>
+            </div>
+            <span class="tavily-badge">
+                <span class="tavily-dot"></span>
+                Tavily + Gemini
+            </span>
+        </div>
+
+        <!-- Search Form -->
+        <form method="post" action="/Tavily/SearchWithTavily" id="searchForm">
+            <div class="search-form">
+                <div class="search-input-wrap">
+                    <i class="bi bi-search search-icon-inner"></i>
+                    <input class="form-control search-main-input"
+                           id="queryInput"
+                           type="text"
+                           name="query"
+                           value="@ViewBag.Query"
+                           placeholder="Soru sorun veya konu girin..."
+                           autocomplete="off"
+                           required />
+                </div>
+                <button type="submit" class="btn-search" id="searchBtn">
+                    <span class="spinner" id="spinner"></span>
+                    <i class="bi bi-search" id="searchIcon"></i>
+                    Ara
+                </button>
+            </div>
+            <p class="search-hint">Türkçe veya İngilizce soru yazabilirsiniz. Gemini AI sonuçları özetleyecek.</p>
+
+            <!-- Hızlı chip'ler -->
+            <div class="quick-chips">
+                <span class="quick-chip" onclick="setQuery(this)">🚗 Kasko sigortası 2025</span>
+                <span class="quick-chip" onclick="setQuery(this)">🏠 Konut sigortası kapsamı</span>
+                <span class="quick-chip" onclick="setQuery(this)">🩺 Sağlık sigortası seçimi</span>
+                <span class="quick-chip" onclick="setQuery(this)">📊 Sigorta sektörü güncel haberler</span>
+                <span class="quick-chip" onclick="setQuery(this)">⚖️ DASK zorunlu deprem sigortası</span>
+            </div>
+        </form>
+
+        @if (ViewBag.Error != null)
+        {
+            <hr class="section-divider" />
+            <div class="error-strip">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @ViewBag.Error
+            </div>
+        }
+
+        @if (ViewBag.Query != null)
+        {
+            <hr class="section-divider" />
+
+            <!-- Aranan sorgu -->
+            <div class="query-tag">
+                <i class="bi bi-search" style="font-size:0.7rem;"></i>
+                "@ViewBag.Query"
+            </div>
+
+            <!-- Gemini AI özeti -->
+            @if (!string.IsNullOrWhiteSpace(ViewBag.geminiAIResult as string) &&
+                    ViewBag.geminiAIResult != "Gemini yanıt üretemedi.")
+            {
+                <div class="gemini-box">
+                    <div class="gemini-box-header">
+                        <div class="gemini-icon"><i class="bi bi-stars"></i></div>
+                        <span>Gemini AI Özeti</span>
+                    </div>
+                    <div class="gemini-content">@ViewBag.geminiAIResult</div>
+                </div>
+            }
+
+            <!-- Tavily kısa cevabı -->
+            @if (!string.IsNullOrWhiteSpace(tavilyAnswer))
+            {
+                <div class="tavily-answer-box">
+                    <div class="tavily-answer-label">
+                        <i class="bi bi-lightning-charge-fill" style="font-size:0.7rem;"></i>
+                        Tavily Hızlı Cevap
+                    </div>
+                    <div class="tavily-answer-text">@tavilyAnswer</div>
+                </div>
+            }
+
+            <!-- Web sonuçları -->
+            @if (tavilyResults.Any())
+            {
+                <div class="results-section-label">
+                    Web Sonuçları (@tavilyResults.Count kaynak)
+                </div>
+
+                <div class="result-list">
+                    @foreach (var item in tavilyResults)
+                    {
+                        double score = item.score ?? 0;
+                        string scoreLabel = score >= 0.8 ? "Yüksek" : score >= 0.5 ? "Orta" : "Düşük";
+                        string scorePercent = ((int)(score * 100)).ToString() + "%";
+
+                        <div class="result-item">
+                            <div class="result-item-header">
+                                <span class="result-title">@item.title</span>
+                                <span class="result-score" title="Alaka skoru: @scoreLabel">
+                                    @scorePercent
+                                </span>
+                            </div>
+                            <a href="@item.url" target="_blank" class="result-url">
+                                <i class="bi bi-link-45deg"></i>
+                                @item.url
+                            </a>
+                            <p class="result-content">@item.content</p>
+                        </div>
+                    }
+                </div>
+            }
+            else if (ViewBag.Error == null)
+            {
+                <div class="empty-search">
+                    <div class="empty-search-icon">🔍</div>
+                    Bu sorgu için web sonucu bulunamadı.
+                </div>
+            }
+        }
+        else if (ViewBag.Error == null)
+        {
+            <!-- İlk açılış boş durum -->
+            <div class="empty-search" style="padding: 2.5rem 0 0.5rem;">
+                <div class="empty-search-icon">🌐</div>
+                Yukarıya bir soru ya da konu girin,<br />Tavily web'i tarayıp Gemini özetlesin.
+            </div>
+        }
+
+    </div>
+</div>
+
+<script>
+    // Chip tıklayınca input'a doldur
+    function setQuery(el) {
+        const text = el.textContent.replace(/^[\p{Emoji}\s]+/u, '').trim();
+        const input = document.getElementById('queryInput');
+        if (input) { input.value = text; input.focus(); }
+    }
+
+    // Form submit → loading state
+    document.getElementById('searchForm')?.addEventListener('submit', function () {
+        const btn    = document.getElementById('searchBtn');
+        const icon   = document.getElementById('searchIcon');
+        const spinner = document.getElementById('spinner');
+        if (btn) {
+            btn.disabled = true;
+            icon.style.display = 'none';
+            spinner.style.display = 'block';
+        }
+    });
+</script>

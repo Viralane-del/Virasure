@@ -1,0 +1,340 @@
+﻿@* _MonthlyExpensesChart.cshtml - subchart3 *@
+
+<style>
+    .expenses-chart-card {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.02);
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+    }
+
+        .expenses-chart-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(248,113,113,0.45), transparent);
+        }
+
+    .expenses-chart-header {
+        padding: 1.4rem 1.6rem 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+
+    .expenses-header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .expenses-header-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: rgba(248,113,113,0.1);
+        border: 1px solid rgba(248,113,113,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f87171;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .expenses-header-text h5 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #e8e8f0;
+        margin: 0 0 0.15rem;
+        letter-spacing: -0.01em;
+    }
+
+    .expenses-header-text p {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(255,255,255,0.3);
+        margin: 0;
+    }
+
+    .expenses-total-badge {
+        text-align: right;
+    }
+
+        .expenses-total-badge .exp-total-amount {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f87171;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+            line-height: 1;
+        }
+
+        .expenses-total-badge .exp-total-label {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-top: 2px;
+        }
+
+    .expenses-divider {
+        margin: 1.1rem 0 0;
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+    }
+
+    .expenses-chart-area {
+        padding: 1rem 1.2rem 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .chart-container-doughnut {
+        position: relative;
+        height: 220px;
+        width: 220px;
+    }
+
+    /* Merkez toplam yazısı */
+    .doughnut-center-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        pointer-events: none;
+    }
+
+        .doughnut-center-label .center-value {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #f87171;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .doughnut-center-label .center-sub {
+            font-size: 0.58rem;
+            color: rgba(255,255,255,0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-top: 3px;
+        }
+
+    /* Özel legend */
+    .expenses-legend {
+        padding: 0 1.4rem 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    .legend-left {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .legend-color-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .legend-name {
+        font-size: 0.73rem;
+        color: rgba(255,255,255,0.5);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .legend-amount {
+        font-size: 0.73rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        color: rgba(255,255,255,0.6);
+        flex-shrink: 0;
+    }
+
+    .expenses-footer {
+        padding: 0.85rem 1.6rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .expenses-footer-note {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.68rem;
+        color: rgba(255,255,255,0.25);
+    }
+
+        .expenses-footer-note i {
+            color: #f87171;
+            font-size: 6px;
+        }
+
+    .expenses-footer-link {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.3);
+        text-decoration: none;
+        letter-spacing: 0.04em;
+        transition: color 0.2s;
+    }
+
+        .expenses-footer-link:hover {
+            color: rgba(255,255,255,0.6);
+        }
+</style>
+
+<div class="col">
+    <div class="expenses-chart-card">
+
+        <div class="expenses-chart-header">
+            <div class="expenses-header-left">
+                <div class="expenses-header-icon">
+                    <i class="bi bi-pie-chart-fill"></i>
+                </div>
+                <div class="expenses-header-text">
+                    <h5>Aylık Giderler</h5>
+                    <p>Son 1 Ay (TL)</p>
+                </div>
+            </div>
+            <div class="expenses-total-badge">
+                <div class="exp-total-amount" id="expensesTotalDisplay">—</div>
+                <div class="exp-total-label">Toplam Gider</div>
+            </div>
+        </div>
+
+        <hr class="expenses-divider" />
+
+        <div class="expenses-chart-area">
+            <div class="chart-container-doughnut">
+                <canvas id="monthlyExpensesChart"></canvas>
+                <div class="doughnut-center-label">
+                    <div class="center-value" id="doughnutCenterValue">—</div>
+                    <div class="center-sub">Toplam</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="expenses-legend" id="expensesLegend"></div>
+
+        <div class="expenses-footer">
+            <span class="expenses-footer-note">
+                <i class="bi bi-circle-fill"></i>
+                Hasar ödemelerine göre dağılım
+            </span>
+            <a href="#" class="expenses-footer-link">Detaylı Rapor →</a>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctxExpenses = document.getElementById('monthlyExpensesChart').getContext('2d');
+
+        const labels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ExpenseLabels));
+        const values = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ExpenseValues));
+
+        const total = values.reduce((a, b) => a + b, 0);
+        const totalFormatted = '₺' + total.toLocaleString('tr-TR');
+
+        document.getElementById('expensesTotalDisplay').textContent = totalFormatted;
+        document.getElementById('doughnutCenterValue').textContent = totalFormatted;
+
+        const palette = [
+            '#f87171', '#60a5fa', '#fbbf24',
+            '#34d399', '#a78bfa', '#fb923c'
+        ];
+
+        const paletteAlpha = palette.map(c => c + 'bb');
+
+        // Özel legend oluştur
+        const legendEl = document.getElementById('expensesLegend');
+        labels.forEach((label, i) => {
+            const color = palette[i % palette.length];
+            const pct = total > 0 ? ((values[i] / total) * 100).toFixed(1) : 0;
+            legendEl.innerHTML += `
+                <div class="legend-item">
+                    <div class="legend-left">
+                        <span class="legend-color-dot" style="background:${color}; box-shadow: 0 0 5px ${color}88;"></span>
+                        <span class="legend-name">${label}</span>
+                    </div>
+                    <span class="legend-amount" style="color:${color};">
+                        ₺${values[i].toLocaleString('tr-TR')}
+                        <span style="font-weight:400; color:rgba(255,255,255,0.25); font-size:0.67rem;"> ${pct}%</span>
+                    </span>
+                </div>`;
+        });
+
+        new Chart(ctxExpenses, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Giderler',
+                    data: values,
+                    backgroundColor: paletteAlpha,
+                    borderColor: palette,
+                    borderWidth: 2,
+                    hoverBorderColor: '#fff',
+                    hoverBorderWidth: 2,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 20, 45, 0.95)',
+                        borderColor: 'rgba(255,255,255,0.08)',
+                        borderWidth: 1,
+                        titleColor: 'rgba(255,255,255,0.6)',
+                        bodyColor: 'rgba(255,255,255,0.8)',
+                        padding: 12,
+                        cornerRadius: 10,
+                        titleFont: { size: 11, weight: '700' },
+                        bodyFont: { size: 12, weight: '600' },
+                        callbacks: {
+                            label: function(context) {
+                                const pct = total > 0 ? ((context.raw / total) * 100).toFixed(1) : 0;
+                                return '  ₺' + context.raw.toLocaleString('tr-TR') + '  (' + pct + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>

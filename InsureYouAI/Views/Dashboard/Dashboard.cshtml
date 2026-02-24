@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@await Component.InvokeAsync("AdminLayoutDashboardWidgets")
+<br />
+<div class="row">
+    @await Component.InvokeAsync("AdminLayoutDashboardMainChart")
+
+    @* @await Component.InvokeAsync("AdminLayoutDashboardSecondMainChart") *@
+</div><!--end row-->
+<br />
+@await Component.InvokeAsync("AdminLayoutDashboardSubWidgets")
+
+<div class="row">
+    @await Component.InvokeAsync("AdminLayoutDashboardForecastPolicySales")
+
+    @await Component.InvokeAsync("AdminLayoutPolicyTypes")
+</div><!--end row-->
+<br />
+@await Component.InvokeAsync("AdminLayoutDashboardSubChart")
+<br />
+<div class="row">
+    @await Component.InvokeAsync("AdminLayoutDasboardCommentList")
+
+    @await Component.InvokeAsync("AdminLayoutDashboardAppUserQuick")
+</div><!--end row-->

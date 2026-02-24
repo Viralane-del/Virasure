@@ -1,0 +1,271 @@
+﻿@* _MonthlyRevenueChart2.cshtml *@
+
+<style>
+    .monthly-chart-card-2 {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.02);
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+    }
+
+        .monthly-chart-card-2::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59,130,246,0.45), transparent);
+        }
+
+    .monthly-chart-header-2 {
+        padding: 1.4rem 1.6rem 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+
+    .monthly-header-left-2 {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .monthly-header-icon-2 {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: rgba(59,130,246,0.1);
+        border: 1px solid rgba(59,130,246,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #60a5fa;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .monthly-header-text-2 h5 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #e8e8f0;
+        margin: 0 0 0.15rem;
+        letter-spacing: -0.01em;
+    }
+
+    .monthly-header-text-2 p {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(255,255,255,0.3);
+        margin: 0;
+    }
+
+    .monthly-total-badge-2 {
+        text-align: right;
+    }
+
+        .monthly-total-badge-2 .total-amount-2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #60a5fa;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+            line-height: 1;
+        }
+
+        .monthly-total-badge-2 .total-label-2 {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-top: 2px;
+        }
+
+    .monthly-divider-2 {
+        margin: 1.1rem 0 0;
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+    }
+
+    .monthly-chart-area-2 {
+        padding: 1rem 1.2rem 1rem;
+    }
+
+    .chart-container-bar-2 {
+        position: relative;
+        height: 260px;
+    }
+
+    .monthly-footer-2 {
+        padding: 0.85rem 1.6rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .monthly-legend-2 {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.3);
+    }
+
+    .legend-dot-2 {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #3b82f6;
+        box-shadow: 0 0 6px rgba(59,130,246,0.6);
+    }
+
+    .monthly-footer-link-2 {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.3);
+        text-decoration: none;
+        letter-spacing: 0.04em;
+        transition: color 0.2s;
+    }
+
+        .monthly-footer-link-2:hover {
+            color: rgba(255,255,255,0.6);
+        }
+</style>
+
+<div class="col">
+    <div class="monthly-chart-card-2">
+
+        <div class="monthly-chart-header-2">
+            <div class="monthly-header-left-2">
+                <div class="monthly-header-icon-2">
+                    <i class="bi bi-bar-chart-line-fill"></i>
+                </div>
+                <div class="monthly-header-text-2">
+                    <h5>Aylık Kazanç</h5>
+                    <p>Poliçe Başlangıç Tarihine Göre (TL)</p>
+                </div>
+            </div>
+            <div class="monthly-total-badge-2">
+                <div class="total-amount-2" id="monthlyTotalDisplay2">—</div>
+                <div class="total-label-2">Yıllık Toplam</div>
+            </div>
+        </div>
+
+        <hr class="monthly-divider-2" />
+
+        <div class="monthly-chart-area-2">
+            <div class="chart-container-bar-2">
+                <canvas id="monthlyRevenueChart"></canvas>
+            </div>
+        </div>
+
+        <div class="monthly-footer-2">
+            <div class="monthly-legend-2">
+                <span class="legend-dot-2"></span>
+                Poliçe başlangıç tarihine göre gelir
+            </div>
+            <a href="#" class="monthly-footer-link-2">Detaylı Rapor →</a>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx2 = document.getElementById('monthlyRevenueChart').getContext('2d');
+
+        const data2 = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.MonthlyRevenues));
+        const total2 = data2.reduce((a, b) => a + b, 0);
+
+        document.getElementById('monthlyTotalDisplay2').textContent =
+            '₺' + total2.toLocaleString('tr-TR');
+
+        const barGradient2 = ctx2.createLinearGradient(0, 0, 0, 260);
+        barGradient2.addColorStop(0, 'rgba(59, 130, 246, 0.9)');
+        barGradient2.addColorStop(1, 'rgba(59, 130, 246, 0.2)');
+
+        const barGradientHover2 = ctx2.createLinearGradient(0, 0, 0, 260);
+        barGradientHover2.addColorStop(0, 'rgba(96, 165, 250, 1)');
+        barGradientHover2.addColorStop(1, 'rgba(96, 165, 250, 0.3)');
+
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+                datasets: [{
+                    label: 'Kazanç (TL)',
+                    data: data2,
+                    backgroundColor: barGradient2,
+                    hoverBackgroundColor: barGradientHover2,
+                    borderColor: 'rgba(59,130,246,0.6)',
+                    borderWidth: 0,
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 20, 45, 0.95)',
+                        borderColor: 'rgba(255,255,255,0.08)',
+                        borderWidth: 1,
+                        titleColor: 'rgba(255,255,255,0.6)',
+                        bodyColor: '#60a5fa',
+                        padding: 12,
+                        cornerRadius: 10,
+                        titleFont: { size: 11, weight: '700' },
+                        bodyFont: { size: 13, weight: '700' },
+                        callbacks: {
+                            label: function(context) {
+                                return '  ₺' + context.raw.toLocaleString('tr-TR');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: 'rgba(255,255,255,0.3)',
+                            font: { size: 10, weight: '600' }
+                        },
+                        border: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255,255,255,0.04)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: 'rgba(255,255,255,0.3)',
+                            font: { size: 10 },
+                            padding: 8,
+                            callback: function(value) {
+                                if (value >= 1000) return '₺' + (value / 1000).toFixed(0) + 'K';
+                                return '₺' + value;
+                            }
+                        },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>

@@ -1,0 +1,764 @@
+﻿@model List<Message>
+@{
+    ViewData["Title"] = "MessageList";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
+}
+
+<style>
+    .message-card {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.02);
+        overflow: hidden;
+        position: relative;
+    }
+
+        .message-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168,85,247,0.45), transparent);
+        }
+
+    .message-card-body {
+        padding: 1.5rem 1.75rem;
+    }
+
+    /* Header */
+    .message-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .message-title-group {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .message-title-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        background: rgba(168,85,247,0.1);
+        border: 1px solid rgba(168,85,247,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #c084fc;
+        font-size: 1rem;
+    }
+
+    .message-title-group h5 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #e8e8f0;
+        margin: 0;
+    }
+
+    .message-count-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        background: rgba(168,85,247,0.1);
+        color: #c084fc;
+        border: 1px solid rgba(168,85,247,0.2);
+        padding: 2px 9px;
+        border-radius: 20px;
+    }
+
+    .ai-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(59,130,246,0.1));
+        color: #c084fc;
+        border: 1px solid rgba(168,85,247,0.25);
+        padding: 2px 9px;
+        border-radius: 20px;
+    }
+
+    .ai-tag-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #a855f7;
+        box-shadow: 0 0 5px rgba(168,85,247,0.8);
+        animation: blink 1.5s ease-in-out infinite;
+    }
+
+    @@keyframes blink {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.3;
+        }
+    }
+
+    /* Filters */
+    .filters-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.25rem;
+    }
+
+    .search-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-icon-inner {
+        position: absolute;
+        left: 12px;
+        color: rgba(255,255,255,0.3);
+        font-size: 0.8rem;
+        pointer-events: none;
+    }
+
+    .search-input {
+        background: rgba(255,255,255,0.04) !important;
+        border: 1px solid rgba(255,255,255,0.09) !important;
+        border-radius: 10px !important;
+        color: #e8e8f0 !important;
+        padding: 0.48rem 1rem 0.48rem 2.2rem !important;
+        font-size: 0.8rem !important;
+        width: 210px;
+        transition: all 0.2s ease;
+    }
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.25) !important;
+        }
+
+        .search-input:focus {
+            outline: none !important;
+            border-color: rgba(168,85,247,0.35) !important;
+            box-shadow: 0 0 0 3px rgba(168,85,247,0.06) !important;
+            background: rgba(255,255,255,0.06) !important;
+            width: 240px;
+        }
+
+    .filter-select {
+        background: rgba(255,255,255,0.04) !important;
+        border: 1px solid rgba(255,255,255,0.09) !important;
+        border-radius: 10px !important;
+        color: rgba(255,255,255,0.55) !important;
+        padding: 0.48rem 2rem 0.48rem 0.8rem !important;
+        font-size: 0.78rem !important;
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'%3E%3Cpath fill='rgba(255,255,255,0.3)' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.6rem center !important;
+        transition: all 0.2s;
+    }
+
+        .filter-select:focus {
+            outline: none !important;
+            border-color: rgba(168,85,247,0.35) !important;
+            box-shadow: 0 0 0 3px rgba(168,85,247,0.06) !important;
+            color: #e8e8f0 !important;
+        }
+
+        .filter-select option {
+            background: #1e2235;
+            color: #e8e8f0;
+        }
+
+    /* Table */
+    .message-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+        .message-table thead tr {
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .message-table thead th {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: rgba(255,255,255,0.3);
+            white-space: nowrap;
+        }
+
+        .message-table tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.15s ease;
+        }
+
+            .message-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .message-table tbody tr:hover {
+                background: rgba(255,255,255,0.025);
+            }
+
+            .message-table tbody tr.row-unread {
+                background: rgba(168,85,247,0.03);
+            }
+
+        .message-table tbody td {
+            padding: 0.8rem 0.8rem;
+            font-size: 0.79rem;
+            color: rgba(255,255,255,0.6);
+            vertical-align: middle;
+        }
+
+    .row-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 26px;
+        height: 24px;
+        padding: 0 6px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.35);
+    }
+
+    /* Sender */
+    .sender-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+    }
+
+    .sender-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(168,85,247,0.08));
+        border: 1px solid rgba(168,85,247,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #c084fc;
+        flex-shrink: 0;
+    }
+
+    .sender-name {
+        font-weight: 600;
+        color: #d8d8e8;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    .subject-text {
+        font-weight: 600;
+        color: #d0d0e8;
+        font-size: 0.8rem;
+        max-width: 130px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+
+    .email-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.4);
+    }
+
+    .detail-text {
+        max-width: 130px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        font-size: 0.74rem;
+        color: rgba(255,255,255,0.35);
+    }
+
+    .date-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.04);
+        border-radius: 6px;
+        padding: 3px 7px;
+        white-space: nowrap;
+    }
+
+    /* Status (IsRead) */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+        .status-badge .s-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+    .badge-unread {
+        background: rgba(168,85,247,0.12);
+        color: #c084fc;
+        border: 1px solid rgba(168,85,247,0.25);
+    }
+
+        .badge-unread .s-dot {
+            background: #a855f7;
+            box-shadow: 0 0 5px rgba(168,85,247,0.6);
+        }
+
+    .badge-read {
+        background: rgba(34,197,94,0.08);
+        color: #4ade80;
+        border: 1px solid rgba(34,197,94,0.2);
+    }
+
+        .badge-read .s-dot {
+            background: #22c55e;
+        }
+
+    /* AI Category */
+    .ai-category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 8px;
+        background: rgba(59,130,246,0.1);
+        border: 1px solid rgba(59,130,246,0.2);
+        color: #60a5fa;
+        white-space: nowrap;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Priority */
+    .priority-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .priority-high {
+        background: rgba(248,113,113,0.1);
+        color: #f87171;
+        border: 1px solid rgba(248,113,113,0.25);
+    }
+
+    .priority-medium {
+        background: rgba(251,191,36,0.1);
+        color: #fbbf24;
+        border: 1px solid rgba(251,191,36,0.25);
+    }
+
+    .priority-low {
+        background: rgba(34,197,94,0.08);
+        color: #4ade80;
+        border: 1px solid rgba(34,197,94,0.2);
+    }
+
+    .priority-none {
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.3);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Actions */
+    .action-group {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+        .action-btn.open {
+            color: #c084fc;
+            background: rgba(168,85,247,0.08);
+            border-color: rgba(168,85,247,0.15);
+        }
+
+            .action-btn.open:hover {
+                background: rgba(168,85,247,0.18);
+                border-color: rgba(168,85,247,0.35);
+                transform: translateY(-1px);
+            }
+
+        .action-btn.edit {
+            color: #fbbf24;
+            background: rgba(251,191,36,0.08);
+            border-color: rgba(251,191,36,0.15);
+        }
+
+            .action-btn.edit:hover {
+                background: rgba(251,191,36,0.18);
+                border-color: rgba(251,191,36,0.35);
+                transform: translateY(-1px);
+            }
+
+        .action-btn.delete {
+            color: #f87171;
+            background: rgba(248,113,113,0.08);
+            border-color: rgba(248,113,113,0.15);
+        }
+
+            .action-btn.delete:hover {
+                background: rgba(248,113,113,0.18);
+                border-color: rgba(248,113,113,0.35);
+                transform: translateY(-1px);
+            }
+
+    /* Footer */
+    .table-footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding-top: 1.25rem;
+        margin-top: 0.25rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .table-footer-info {
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.25);
+    }
+
+        .table-footer-info span {
+            color: rgba(255,255,255,0.45);
+            font-weight: 600;
+        }
+
+    .btn-add-message {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0.55rem 1.1rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(135deg, #a855f7, #7c3aed);
+        border: none;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 3px 14px rgba(168,85,247,0.22);
+    }
+
+        .btn-add-message:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168,85,247,0.38);
+            color: #fff;
+        }
+
+    .empty-state {
+        padding: 3rem;
+        text-align: center;
+        color: rgba(255,255,255,0.2);
+        font-size: 0.82rem;
+    }
+
+    .no-result-row {
+        display: none;
+    }
+
+        .no-result-row td {
+            text-align: center !important;
+            padding: 2rem !important;
+            color: rgba(255,255,255,0.25) !important;
+        }
+</style>
+
+<div class="message-card">
+    <div class="message-card-body">
+
+        <!-- Header -->
+        <div class="message-page-header">
+            <div class="message-title-group">
+                <div class="message-title-icon">
+                    <i class="bi bi-envelope-fill"></i>
+                </div>
+                <h5>Gelen Mesaj Listesi</h5>
+                <span class="message-count-badge">@Model?.Count mesaj</span>
+                <span class="ai-tag">
+                    <span class="ai-tag-dot"></span>
+                    AI Destekli
+                </span>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-row">
+            <div class="search-wrap">
+                <i class="bi bi-search search-icon-inner"></i>
+                <input class="form-control search-input"
+                       id="messageSearch"
+                       type="text"
+                       placeholder="Gönderen veya konu ara..." />
+            </div>
+
+            <select class="filter-select" id="filterRead">
+                <option value="">Tüm Durumlar</option>
+                <option value="unread">Okunmadı</option>
+                <option value="read">Okundu</option>
+            </select>
+
+            <select class="filter-select" id="filterPriority">
+                <option value="">Tüm Öncelikler</option>
+                <option value="Yüksek">🔴 Yüksek</option>
+                <option value="Orta">🟡 Orta</option>
+                <option value="Düşük">🟢 Düşük</option>
+            </select>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            @if (Model != null && Model.Any())
+            {
+                <table class="message-table" id="messageTable">
+                    <thead>
+                        <tr>
+                            <th style="width:42px;">#</th>
+                            <th>Gönderen</th>
+                            <th>Konu</th>
+                            <th>Email</th>
+                            <th>Detay</th>
+                            <th>Tarih</th>
+                            <th style="text-align:center;">Durum</th>
+                            <th style="text-align:center;">
+                                <i class="bi bi-stars" style="color:#c084fc; margin-right:3px;"></i>AI Kategori
+                            </th>
+                            <th style="text-align:center;">Öncelik</th>
+                            <th style="width:100px; text-align:right; padding-right:1rem;">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            count++;
+                            var initials = item.NameSurname?.Length > 0
+                            ? string.Join("", item.NameSurname.Split(' ').Take(2).Select(w => w[0].ToString()))
+                            : "?";
+
+                            bool isRead = item.IsRead;
+                            var priority = item.Priority?.Trim() ?? "";
+
+                            var priorityClass = priority switch
+                            {
+                                "Yüksek" => "priority-high",
+                                "Orta" => "priority-medium",
+                                "Düşük" => "priority-low",
+                                _ => "priority-none"
+                            };
+                            var priorityIcon = priority switch
+                            {
+                                "Yüksek" => "🔴",
+                                "Orta" => "🟡",
+                                "Düşük" => "🟢",
+                                _ => ""
+                            };
+
+                            <tr class="msg-row @(!isRead ? "row-unread" : "")"
+                                data-read="@(isRead ? "read" : "unread")"
+                                data-priority="@priority">
+                                <td><span class="row-num">@count</span></td>
+                                <td>
+                                    <div class="sender-cell">
+                                        <div class="sender-avatar">@initials.ToUpper()</div>
+                                        <span class="sender-name msg-sender-val">@item.NameSurname</span>
+                                    </div>
+                                </td>
+                                <td><span class="subject-text msg-subject-val">@item.Subject</span></td>
+                                <td>
+                                    <span class="email-cell">
+                                        <i class="bi bi-at"></i>@item.Email
+                                    </span>
+                                </td>
+                                <td><span class="detail-text" title="@item.Detail">@item.Detail</span></td>
+                                <td>
+                                    <span class="date-cell">
+                                        <i class="bi bi-calendar3"></i>
+                                        @item.SendDate.ToString("dd MMM yyyy")
+                                    </span>
+                                </td>
+                                <td style="text-align:center;">
+                                    @if (isRead)
+                                    {
+                                        <span class="status-badge badge-read">
+                                            <span class="s-dot"></span>Okundu
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge badge-unread">
+                                            <span class="s-dot"></span>Okunmadı
+                                        </span>
+                                    }
+                                </td>
+                                <td style="text-align:center;">
+                                    @if (!string.IsNullOrWhiteSpace(item.AICategory))
+                                    {
+                                        <span class="ai-category-badge" title="@item.AICategory">
+                                            <i class="bi bi-stars"></i>@item.AICategory
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="font-size:0.7rem; color:rgba(255,255,255,0.2);">—</span>
+                                    }
+                                </td>
+                                <td style="text-align:center;">
+                                    @if (!string.IsNullOrWhiteSpace(priority))
+                                    {
+                                        <span class="priority-badge @priorityClass">
+                                            @priorityIcon @priority
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="font-size:0.7rem; color:rgba(255,255,255,0.2);">—</span>
+                                    }
+                                </td>
+                                <td style="text-align:right;">
+                                    <div class="action-group justify-content-end">
+                                        <a href="/Message/DetailMessage/@item.MessageId"
+                                           class="action-btn open" title="Mesajı Aç"
+                                           data-bs-toggle="tooltip" data-bs-placement="top">
+                                            <i class="bi bi-envelope-open-fill"></i>
+                                        </a>
+                                        <a href="/Message/UpdateMessage/@item.MessageId"
+                                           class="action-btn edit" title="Düzenle"
+                                           data-bs-toggle="tooltip" data-bs-placement="top">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+                                        <a href="/Message/DeleteMessage/@item.MessageId"
+                                           class="action-btn delete" title="Sil"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           onclick="return confirm('Bu mesajı silmek istediğinize emin misiniz?')">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        <tr class="no-result-row" id="noResultRow">
+                            <td colspan="10">
+                                <div style="font-size:1.5rem; margin-bottom:.4rem;">🔍</div>
+                                Aradığınız kritere uygun mesaj bulunamadı.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div style="font-size:2.2rem; margin-bottom:.6rem;">📭</div>
+                    Henüz gelen mesaj yok.
+                </div>
+            }
+        </div>
+
+        <!-- Footer -->
+        <div class="table-footer-row">
+            <span class="table-footer-info">
+                Toplam <span id="visibleCount">@Model?.Count</span> mesaj gösteriliyor
+            </span>
+            <a href="/Message/CreateMessage/" class="btn-add-message">
+                <i class="bi bi-plus-lg"></i>
+                Yeni Mesaj Oluştur
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function filterRows() {
+        const q       = document.getElementById('messageSearch').value.toLowerCase().trim();
+        const readVal = document.getElementById('filterRead').value;
+        const prioVal = document.getElementById('filterPriority').value;
+        const rows    = document.querySelectorAll('.msg-row');
+        const noResult = document.getElementById('noResultRow');
+        let visible = 0;
+
+        rows.forEach(row => {
+            const sender  = row.querySelector('.msg-sender-val')?.textContent.toLowerCase() || '';
+            const subject = row.querySelector('.msg-subject-val')?.textContent.toLowerCase() || '';
+            const matchSearch = !q || sender.includes(q) || subject.includes(q);
+            const matchRead   = !readVal || row.dataset.read === readVal;
+            const matchPrio   = !prioVal || row.dataset.priority === prioVal;
+
+            const show = matchSearch && matchRead && matchPrio;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        noResult.style.display = visible === 0 ? '' : 'none';
+        document.getElementById('visibleCount').textContent = visible;
+    }
+
+    document.getElementById('messageSearch')?.addEventListener('input', filterRows);
+    document.getElementById('filterRead')?.addEventListener('change', filterRows);
+    document.getElementById('filterPriority')?.addEventListener('change', filterRows);
+
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+        new bootstrap.Tooltip(el);
+    });
+</script>

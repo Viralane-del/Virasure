@@ -1,0 +1,67 @@
+﻿@{
+    Layout = null;
+}
+
+<!doctype html>
+<html class="no-js" lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Virasure - AI Sigorta Yönetim Sistemi </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="/insureyou/img/favicon.ico">
+    <!-- Place favicon.ico in the root directory -->
+    <!-- CSS here -->
+    <link rel="stylesheet" href="/insureyou/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/insureyou/css/animate.min.css">
+    <link rel="stylesheet" href="/insureyou/css/magnific-popup.css">
+    <link rel="stylesheet" href="/insureyou/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/insureyou/css/dripicons.css">
+    <link rel="stylesheet" href="/insureyou/css/slick.css">
+    <link rel="stylesheet" href="/insureyou/css/meanmenu.css">
+    <link rel="stylesheet" href="/insureyou/css/aos.css">
+    <link rel="stylesheet" href="/insureyou/css/swiper.min.css">
+    <link rel="stylesheet" href="/insureyou/css/default.css">
+    <link rel="stylesheet" href="/insureyou/css/style.css">
+    <link rel="stylesheet" href="/insureyou/css/responsive.css">
+</head>
+<body>   
+    <header class="header-area header-three">
+        @await Component.InvokeAsync("UILayoutHeader")
+
+        @await Component.InvokeAsync("UILayoutHeaderContact")
+
+        @await Component.InvokeAsync("UILayoutNavbar")                               
+    </header>
+    @await Component.InvokeAsync("UILayoutMobileMenu")
+    <main>
+        @RenderBody()    
+
+        @await Html.PartialAsync("SubscribeEmail")
+    </main>
+    @await Component.InvokeAsync("UILayoutSectionFooter")
+
+    <script src="/insureyou/js/vendor/modernizr-3.5.0.min.js"></script>
+    <script src="/insureyou/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="/insureyou/js/popper.min.js"></script>
+    <script src="/insureyou/js/bootstrap.min.js"></script>
+    <script src="/insureyou/js/slick.min.js"></script>
+    <script src="/insureyou/js/ajax-form.js"></script>
+    <script src="/insureyou/js/paroller.js"></script>
+    <script src="/insureyou/js/wow.min.js"></script>
+    <script src="/insureyou/js/js_isotope.pkgd.min.js"></script>
+    <script src="/insureyou/js/imagesloaded.min.js"></script>
+    <script src="/insureyou/js/parallax.min.js"></script>
+    <script src="/insureyou/js/jquery.waypoints.min.js"></script>
+    <script src="/insureyou/js/jquery.counterup.min.js"></script>
+    <script src="/insureyou/js/jquery.scrollUp.min.js"></script>
+    <script src="/insureyou/js/jquery.meanmenu.min.js"></script>
+    <script src="/insureyou/js/parallax-scroll.js"></script>
+    <script src="/insureyou/js/swiper.min.js"></script>
+    <script src="/insureyou/js/aos.js"></script>
+    <script src="/insureyou/js/jquery.magnific-popup.min.js"></script>
+    <script src="/insureyou/js/element-in-view.js"></script>
+    <script src="/insureyou/js/main.js"></script>
+</body>
+</html>

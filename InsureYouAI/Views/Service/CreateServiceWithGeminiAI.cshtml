@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "CreateServiceWithGeminiAI";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var services = ViewBag.Services as List<string>;
+    var error = ViewBag.Error as string;
+}
+
+<hr />
+
+<div class="container mt-5">
+    <h2 class="mb-4">🤖 Google Gemini ile Hizmetler Bölümü Oluştur</h2>
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="alert alert-danger">
+            <strong>Hata:</strong> @error
+        </div>
+    }
+    else if (services != null && services.Any())
+    {
+        <ul class="list-group">
+            @foreach (var item in services)
+            {
+                <li class="list-group-item">
+                    @item
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Henüz Gemini tarafından oluşturulmuş bir hizmet bulunamadı.
+        </div>
+    }
+</div>

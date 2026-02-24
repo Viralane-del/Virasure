@@ -1,0 +1,367 @@
+﻿@model List<UserPolicySummartViewModel>
+@{
+    int count = 0;
+}
+
+<style>
+    /* Mevcut .customers-table tbody tr stiline ekle */
+    .customers-table tbody {
+        display: block;
+        max-height: 285px; /* ~5 satır */
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,193,7,0.3) transparent;
+    }
+
+        .customers-table thead,
+        .customers-table tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        /* Webkit tarayıcılar için scrollbar stili */
+        .customers-table tbody::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .customers-table tbody::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .customers-table tbody::-webkit-scrollbar-thumb {
+            background: rgba(255,193,7,0.3);
+            border-radius: 4px;
+        }
+
+            .customers-table tbody::-webkit-scrollbar-thumb:hover {
+                background: rgba(255,193,7,0.5);
+            }
+
+    .top-customers-card {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+        border: 1px solid rgba(255, 193, 7, 0.15);
+        border-radius: 20px;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 80px rgba(255, 193, 7, 0.04);
+        overflow: hidden;
+        position: relative;
+        transition: box-shadow 0.3s ease;
+    }
+
+        .top-customers-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 193, 7, 0.5), transparent);
+        }
+
+        .top-customers-card:hover {
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 100px rgba(255, 193, 7, 0.08);
+        }
+
+    .card-header-custom {
+        padding: 1.5rem 1.75rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .card-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, rgba(255,193,7,0.2), rgba(255,193,7,0.05));
+        border: 1px solid rgba(255,193,7,0.3);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+
+    .card-title-text {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #e8e8f0;
+        letter-spacing: 0.02em;
+        margin: 0;
+    }
+
+    .badge-live {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: rgba(255,193,7,0.15);
+        color: #ffc107;
+        border: 1px solid rgba(255,193,7,0.3);
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    .divider-glow {
+        margin: 1.25rem 0;
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    }
+
+    .customers-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+        .customers-table thead tr {
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .customers-table thead th {
+            padding: 0.6rem 1rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.35);
+            white-space: nowrap;
+        }
+
+        .customers-table tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.2s ease;
+        }
+
+            .customers-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .customers-table tbody tr:hover {
+                background: rgba(255,255,255,0.03);
+            }
+
+        .customers-table tbody td {
+            padding: 0.85rem 1rem;
+            font-size: 0.825rem;
+            color: rgba(255,255,255,0.75);
+            vertical-align: middle;
+        }
+
+    .rank-badge {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+
+    .rank-1 {
+        background: linear-gradient(135deg, #ffd700, #ffaa00);
+        color: #1a1a2e;
+    }
+
+    .rank-2 {
+        background: linear-gradient(135deg, #c0c0c0, #999);
+        color: #1a1a2e;
+    }
+
+    .rank-3 {
+        background: linear-gradient(135deg, #cd7f32, #a0522d);
+        color: #fff;
+    }
+
+    .rank-other {
+        background: rgba(255,255,255,0.08);
+        color: rgba(255,255,255,0.5);
+    }
+
+    .customer-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(255,193,7,0.3), rgba(255,193,7,0.1));
+        border: 1px solid rgba(255,193,7,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #ffc107;
+        flex-shrink: 0;
+    }
+
+    .customer-name {
+        font-weight: 600;
+        color: #e8e8f0;
+        font-size: 0.825rem;
+    }
+
+    .policy-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 8px;
+        padding: 3px 10px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.6);
+    }
+
+    .balance-amount {
+        font-weight: 600;
+        color: #4ade80;
+        font-size: 0.825rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .btn-detail {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        color: #ffc107;
+        background: rgba(255,193,7,0.08);
+        border: 1px solid rgba(255,193,7,0.25);
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+        .btn-detail:hover {
+            background: rgba(255,193,7,0.18);
+            border-color: rgba(255,193,7,0.5);
+            color: #ffd54f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255,193,7,0.15);
+        }
+
+    .table-footer {
+        padding: 1rem 1.75rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .footer-stat {
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.3);
+    }
+
+        .footer-stat span {
+            color: rgba(255,255,255,0.55);
+            font-weight: 600;
+        }
+
+    .view-all-btn {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: rgba(255,193,7,0.7);
+        text-decoration: none;
+        letter-spacing: 0.05em;
+        transition: color 0.2s;
+    }
+
+        .view-all-btn:hover {
+            color: #ffc107;
+        }
+
+    .empty-state {
+        padding: 2.5rem;
+        text-align: center;
+        color: rgba(255,255,255,0.25);
+        font-size: 0.82rem;
+    }
+</style>
+
+<div class="col-12 col-lg-6 col-xl-6 d-flex">
+    <div class="top-customers-card w-100">
+
+        <div class="card-header-custom">
+            <div class="card-title-wrapper">
+                <div class="card-icon">⭐</div>
+                <h6 class="card-title-text">En Gözde Müşterilerimiz</h6>
+            </div>
+            <span class="badge-live">Canlı</span>
+        </div>
+
+        <hr class="divider-glow" style="margin: 1.25rem 0 0;" />
+
+        <div class="px-2">
+            @if (Model != null && Model.Any())
+            {
+                <table class="customers-table">
+                    <thead>
+                        <tr>
+                            <th style="width:48px; text-align:center;">#</th>
+                            <th>Müşteri</th>
+                            <th style="text-align:center;">Poliçe</th>
+                            <th>Bakiye</th>
+                            <th style="text-align:right; padding-right:1.25rem;">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            count++;
+                            string rankClass = count == 1 ? "rank-1" : count == 2 ? "rank-2" : count == 3 ? "rank-3" : "rank-other";
+                            string initials = (item.FullName?.Length > 0 ? item.FullName[0].ToString() : "");
+                            <tr>
+                                <td style="text-align:center;">
+                                    <div class="rank-badge @rankClass mx-auto">@count</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="customer-avatar">@initials.ToUpper()</div>
+                                        <span class="customer-name">@item.FullName</span>
+                                    </div>
+                                </td>
+                                <td style="text-align:center;">
+                                    <span class="policy-count">@item.PolicyCount</span>
+                                </td>
+                                <td>
+                                    <span class="balance-amount">@item.TotalPremium ₺</span>
+                                </td>
+                                <td style="text-align:right; padding-right:1rem;">
+                                    <a href="#" class="btn-detail">
+                                        Detay →
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div style="font-size:2rem; margin-bottom:.5rem;">👥</div>
+                    Henüz müşteri bulunamadı.
+                </div>
+            }
+        </div>
+
+        <div class="table-footer">
+            <span class="footer-stat">Toplam <span>@(Model?.Count ?? 0)</span> müşteri</span>
+            <a href="#" class="view-all-btn">Tümünü Görüntüle →</a>
+        </div>
+
+    </div>
+</div>
+

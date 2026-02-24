@@ -1,0 +1,414 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 — Sayfa Bulunamadı</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg-deep:    #0d0f1e;
+            --bg-card:    #1a1a2e;
+            --bg-mid:     #16213e;
+            --accent:     #ffc107;
+            --accent-dim: rgba(255,193,7,0.15);
+            --blue:       #3b82f6;
+            --red:        #f87171;
+            --text:       #e8e8f0;
+            --muted:      rgba(255,255,255,0.35);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-deep);
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient background blobs */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.12;
+            animation: drift 14s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        .blob-1 {
+            width: 520px; height: 520px;
+            background: #ffc107;
+            top: -160px; left: -160px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 400px; height: 400px;
+            background: #3b82f6;
+            bottom: -120px; right: -100px;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 300px; height: 300px;
+            background: #f87171;
+            top: 40%; left: 55%;
+            animation-delay: -9s;
+        }
+
+        @@keyframes drift {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 20px) scale(1.07); }
+        }
+
+        /* Grid overlay texture */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+        }
+
+        /* Main container */
+        .container-404 {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            max-width: 560px;
+            animation: fadeUp 0.7s cubic-bezier(0.4,0,0.2,1) both;
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(32px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Shield icon */
+        .icon-shell {
+            width: 100px;
+            height: 100px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, rgba(255,193,7,0.15), rgba(255,193,7,0.04));
+            border: 1px solid rgba(255,193,7,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2.5rem;
+            box-shadow: 0 0 0 12px rgba(255,193,7,0.05), 0 0 40px rgba(255,193,7,0.1);
+            animation: pulse-ring 3s ease-in-out infinite;
+        }
+
+        @@keyframes pulse-ring {
+            0%, 100% { box-shadow: 0 0 0 12px rgba(255,193,7,0.05), 0 0 40px rgba(255,193,7,0.08); }
+            50%       { box-shadow: 0 0 0 20px rgba(255,193,7,0.02), 0 0 60px rgba(255,193,7,0.15); }
+        }
+
+        /* 404 big number */
+        .error-code {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(6rem, 18vw, 9rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, #ffd54f 0%, #ffc107 40%, rgba(255,193,7,0.4) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.1rem;
+            position: relative;
+            animation: fadeUp 0.7s 0.1s cubic-bezier(0.4,0,0.2,1) both;
+        }
+
+        .error-code::after {
+            content: '404';
+            position: absolute;
+            inset: 0;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            background: none;
+            -webkit-text-fill-color: transparent;
+            -webkit-text-stroke: 1px rgba(255,193,7,0.1);
+            transform: translate(4px, 5px);
+            z-index: -1;
+        }
+
+        /* Text */
+        .error-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.65rem;
+            animation: fadeUp 0.7s 0.2s cubic-bezier(0.4,0,0.2,1) both;
+        }
+
+        .error-desc {
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.65;
+            margin-bottom: 2rem;
+            animation: fadeUp 0.7s 0.3s cubic-bezier(0.4,0,0.2,1) both;
+        }
+
+        /* Info card */
+        .info-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 14px;
+            padding: 1rem 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-align: left;
+            margin-bottom: 2rem;
+            animation: fadeUp 0.7s 0.4s cubic-bezier(0.4,0,0.2,1) both;
+        }
+
+        .info-card-icon {
+            width: 38px;
+            height: 38px;
+            background: rgba(248,113,113,0.1);
+            border: 1px solid rgba(248,113,113,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f87171;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .info-card-text {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.35);
+            line-height: 1.55;
+        }
+
+        .info-card-text strong {
+            display: block;
+            color: rgba(255,255,255,0.55);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        /* Buttons */
+        .btn-group-404 {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeUp 0.7s 0.5s cubic-bezier(0.4,0,0.2,1) both;
+        }
+
+        .btn-primary-404 {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.72rem 1.5rem;
+            font-size: 0.83rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #1a1a2e;
+            background: linear-gradient(135deg, #ffd54f, #ffc107);
+            border: none;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 20px rgba(255,193,7,0.25);
+        }
+
+        .btn-primary-404:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(255,193,7,0.38);
+            color: #1a1a2e;
+        }
+
+        .btn-secondary-404 {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.72rem 1.5rem;
+            font-size: 0.83rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .btn-secondary-404:hover {
+            background: rgba(255,255,255,0.09);
+            color: rgba(255,255,255,0.8);
+            transform: translateY(-2px);
+        }
+
+        /* Brand footer */
+        .brand-footer {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.18);
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .brand-dot {
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: rgba(255,193,7,0.35);
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,193,7,0.55);
+            animation: float-up linear infinite;
+        }
+
+        @@keyframes float-up {
+            0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 0.3; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        /* Animated dashes around number */
+        .code-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dash {
+            position: absolute;
+            background: rgba(255,193,7,0.25);
+            border-radius: 2px;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        .dash-h { width: 28px; height: 2px; }
+        .dash-v { width: 2px; height: 28px; }
+
+        .dash-tl-h { top: 8px; left: -20px; animation-delay: 0s; }
+        .dash-tl-v { top: 8px; left: -20px; animation-delay: 0.5s; }
+        .dash-br-h { bottom: 8px; right: -20px; animation-delay: 1s; }
+        .dash-br-v { bottom: 8px; right: -20px; animation-delay: 1.5s; }
+
+        @@keyframes blink {
+            0%, 100% { opacity: 0.2; }
+            50%       { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="particles" id="particles"></div>
+
+    <div class="container-404">
+
+        <div class="icon-shell">🛡️</div>
+
+        <div class="code-wrap">
+            <span class="dash dash-h dash-tl-h"></span>
+            <span class="dash dash-v dash-tl-v"></span>
+            <span class="dash dash-h dash-br-h"></span>
+            <span class="dash dash-v dash-br-v"></span>
+            <div class="error-code">404</div>
+        </div>
+
+        <h1 class="error-title">Sayfa Bulunamadı</h1>
+
+        <p class="error-desc">
+            Aradığınız poliçe veya sayfa sistemimizde mevcut değil.<br />
+            Silinmiş, taşınmış ya da hiç var olmamış olabilir.
+        </p>
+
+        <div class="info-card">
+            <div class="info-card-icon">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div class="info-card-text">
+                <strong>Hata Kodu: 404 — Not Found</strong>
+                İstek yapılan kaynak sunucuda bulunamadı. Lütfen URL'yi kontrol edin veya yöneticinizle iletişime geçin.
+            </div>
+        </div>
+
+        <div class="btn-group-404">
+            <a href="/Dashboard/Dashboard/" class="btn-primary-404">
+                <i class="bi bi-house-fill"></i>
+                Dashboard'a Dön
+            </a>
+            <a href="javascript:history.back()" class="btn-secondary-404">
+                <i class="bi bi-arrow-left"></i>
+                Geri Git
+            </a>
+        </div>
+
+    </div>
+
+    <div class="brand-footer">
+        <span class="brand-dot"></span>
+        Virasure Admin Panel
+        <span class="brand-dot"></span>
+    </div>
+
+    <script>
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 24; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 2.5 + 1;
+            p.style.cssText = `
+                left: ${Math.random() * 100}%;
+                width: ${size}px;
+                height: ${size}px;
+                animation-duration: ${Math.random() * 12 + 10}s;
+                animation-delay: ${Math.random() * 14}s;
+            `;
+            container.appendChild(p);
+        }
+    </script>
+</body>
+</html>

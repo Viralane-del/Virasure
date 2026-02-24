@@ -1,0 +1,29 @@
+﻿@model TrailerVideo
+@{
+    ViewData["Title"] = "CreateTrailerVideo";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex align-items-center">
+            <h5 class="mb-0">Yeni Video Girişi</h5>
+        </div>
+        <form method="post">
+            <div class="form-group">
+                <label>Video Başlığı</label>
+                <input type="text" class="form-control" asp-for="Title" />
+            </div>
+            <div class="form-group">
+                <label>Kapak Fotoğrafı</label>
+                <input type="text" class="form-control" asp-for="CoverImageURL" />
+            </div>
+            <div class="form-group">
+                <label>Video URL</label>
+                <input type="text" class="form-control" asp-for="VideoURL" />
+            </div>
+            <button type="submit" class="btn btn-outline-primary mt-3">Video Girişini Kaydet</button>
+        </form>
+    </div>
+</div>
+

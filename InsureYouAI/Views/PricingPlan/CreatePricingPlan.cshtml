@@ -1,0 +1,25 @@
+﻿@model PricingPlan
+@{
+    ViewData["Title"] = "CreatePricingPlan";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex align-items-center">
+            <h5 class="mb-0">Yeni Ödeme Planı Girişi</h5>
+        </div>
+        <form method="post">
+            <div class="form-group">
+                <label>Başlık</label>
+                <input type="text" class="form-control" asp-for="Title"  />
+            </div>
+            <div class="form-group">
+                <label>Fiyat</label>
+                <input type="text" class="form-control" asp-for="Price" />
+            </div>
+            <button type="submit" class="btn btn-outline-primary mt-3">Ödeme Planını Kaydet</button>
+        </form>
+    </div>
+</div>
+

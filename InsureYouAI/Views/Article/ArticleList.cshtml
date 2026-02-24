@@ -1,0 +1,526 @@
+﻿@model List<Article>
+@{
+    ViewData["Title"] = "ArticleList";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
+}
+
+<style>
+    .article-card {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.02);
+        overflow: hidden;
+        position: relative;
+    }
+
+        .article-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(96,165,250,0.45), transparent);
+        }
+
+    .article-card-body {
+        padding: 1.5rem 1.75rem;
+    }
+
+    /* Header */
+    .article-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .article-title-group {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .article-title-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        background: rgba(59,130,246,0.1);
+        border: 1px solid rgba(59,130,246,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #60a5fa;
+        font-size: 1rem;
+    }
+
+    .article-title-group h5 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #e8e8f0;
+        margin: 0;
+    }
+
+    .article-count-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        background: rgba(59,130,246,0.1);
+        color: #60a5fa;
+        border: 1px solid rgba(59,130,246,0.2);
+        padding: 2px 9px;
+        border-radius: 20px;
+    }
+
+    /* Search */
+    .search-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .search-wrap .search-icon-inner {
+            position: absolute;
+            left: 12px;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.8rem;
+            pointer-events: none;
+        }
+
+    .search-input {
+        background: rgba(255,255,255,0.04) !important;
+        border: 1px solid rgba(255,255,255,0.09) !important;
+        border-radius: 10px !important;
+        color: #e8e8f0 !important;
+        padding: 0.5rem 1rem 0.5rem 2.2rem !important;
+        font-size: 0.8rem !important;
+        width: 220px;
+        transition: all 0.2s ease;
+    }
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.25) !important;
+        }
+
+        .search-input:focus {
+            outline: none !important;
+            border-color: rgba(59,130,246,0.35) !important;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.06) !important;
+            background: rgba(255,255,255,0.06) !important;
+            width: 260px;
+        }
+
+    /* Table */
+    .article-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+        .article-table thead tr {
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .article-table thead th {
+            padding: 0.6rem 1rem;
+            font-size: 0.67rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.3);
+            white-space: nowrap;
+        }
+
+        .article-table tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.15s ease;
+        }
+
+            .article-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .article-table tbody tr:hover {
+                background: rgba(255,255,255,0.025);
+            }
+
+        .article-table tbody td {
+            padding: 0.9rem 1rem;
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.6);
+            vertical-align: middle;
+        }
+
+    /* Row number */
+    .row-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 26px;
+        height: 24px;
+        padding: 0 6px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.35);
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Title cell */
+    .article-title-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        max-width: 280px;
+    }
+
+    .article-icon-mini {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #60a5fa;
+        font-size: 0.7rem;
+        flex-shrink: 0;
+    }
+
+    .article-title-text {
+        font-weight: 600;
+        color: #d8d8e8;
+        font-size: 0.82rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Author */
+    .author-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .author-avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(168,85,247,0.08));
+        border: 1px solid rgba(168,85,247,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: #c084fc;
+        flex-shrink: 0;
+    }
+
+    .author-name {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.5);
+        white-space: nowrap;
+    }
+
+    /* Date */
+    .date-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.04);
+        border-radius: 6px;
+        padding: 3px 8px;
+        white-space: nowrap;
+    }
+
+        .date-cell i {
+            font-size: 0.65rem;
+        }
+
+    /* Action buttons */
+    .action-group {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+        .action-btn.view {
+            color: #60a5fa;
+            background: rgba(59,130,246,0.08);
+            border-color: rgba(59,130,246,0.15);
+        }
+
+            .action-btn.view:hover {
+                background: rgba(59,130,246,0.18);
+                border-color: rgba(59,130,246,0.35);
+                transform: translateY(-1px);
+            }
+
+        .action-btn.edit {
+            color: #fbbf24;
+            background: rgba(251,191,36,0.08);
+            border-color: rgba(251,191,36,0.15);
+        }
+
+            .action-btn.edit:hover {
+                background: rgba(251,191,36,0.18);
+                border-color: rgba(251,191,36,0.35);
+                transform: translateY(-1px);
+            }
+
+        .action-btn.delete {
+            color: #f87171;
+            background: rgba(248,113,113,0.08);
+            border-color: rgba(248,113,113,0.15);
+        }
+
+            .action-btn.delete:hover {
+                background: rgba(248,113,113,0.18);
+                border-color: rgba(248,113,113,0.35);
+                transform: translateY(-1px);
+            }
+
+    /* Footer */
+    .table-footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding-top: 1.25rem;
+        margin-top: 0.25rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .table-footer-info {
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.25);
+    }
+
+        .table-footer-info span {
+            color: rgba(255,255,255,0.45);
+            font-weight: 600;
+        }
+
+    .btn-add-article {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0.55rem 1.1rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #1a1a2e;
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        border: none;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 3px 14px rgba(59,130,246,0.22);
+    }
+
+        .btn-add-article:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59,130,246,0.35);
+            color: #1a1a2e;
+        }
+
+    /* Empty & no-result */
+    .empty-state {
+        padding: 3rem;
+        text-align: center;
+        color: rgba(255,255,255,0.2);
+        font-size: 0.82rem;
+    }
+
+    .empty-state-icon {
+        font-size: 2.2rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .no-result-row {
+        display: none;
+    }
+
+        .no-result-row td {
+            text-align: center !important;
+            padding: 2rem !important;
+            color: rgba(255,255,255,0.25) !important;
+            font-size: 0.8rem;
+        }
+</style>
+
+<div class="article-card">
+    <div class="article-card-body">
+
+        <!-- Header -->
+        <div class="article-page-header">
+            <div class="article-title-group">
+                <div class="article-title-icon">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                </div>
+                <h5>Makaleler</h5>
+                <span class="article-count-badge">@Model?.Count kayıt</span>
+            </div>
+
+            <div class="search-wrap">
+                <i class="bi bi-search search-icon-inner"></i>
+                <input class="form-control search-input"
+                       id="articleSearch"
+                       type="text"
+                       placeholder="Makale veya yazar ara..." />
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            @if (Model != null && Model.Any())
+            {
+                <table class="article-table" id="articleTable">
+                    <thead>
+                        <tr>
+                            <th style="width:50px;">#</th>
+                            <th>Başlık</th>
+                            <th>Yazar</th>
+                            <th>Tarih</th>
+                            <th style="width:110px; text-align:right; padding-right:1.1rem;">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            count++;
+                            var initials = (item.AppUser?.Name?.Length > 0 ? item.AppUser.Name[0].ToString() : "")
+                            + (item.AppUser?.Surname?.Length > 0 ? item.AppUser.Surname[0].ToString() : "");
+                            <tr class="article-row">
+                                <td><span class="row-num">@count</span></td>
+                                <td>
+                                    <div class="article-title-cell">
+                                        <div class="article-icon-mini">
+                                            <i class="bi bi-file-text"></i>
+                                        </div>
+                                        <span class="article-title-text article-search-val">@item.Title</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="author-cell">
+                                        <div class="author-avatar">@initials.ToUpper()</div>
+                                        <span class="author-name author-search-val">@item.AppUser?.Name @item.AppUser?.Surname</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="date-cell">
+                                        <i class="bi bi-calendar3"></i>
+                                        @item.CreatedDate.ToString("dd MMM yyyy")
+                                    </span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <div class="action-group justify-content-end">
+                                        <a href="/Default/Index/"
+                                           class="action-btn view"
+                                           title="Sitede Gör"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                        <a href="/Article/UpdateArticle/@item.ArticleId"
+                                           class="action-btn edit"
+                                           title="Düzenle"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+                                        <a href="/Article/DeleteArticle/@item.ArticleId"
+                                           class="action-btn delete"
+                                           title="Sil"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           onclick="return confirm('Bu makaleyi silmek istediğinize emin misiniz?')">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        <tr class="no-result-row" id="noResultRow">
+                            <td colspan="5">
+                                <div style="font-size:1.5rem; margin-bottom:.4rem;">🔍</div>
+                                Aradığınız makale bulunamadı.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-state-icon">📄</div>
+                    Henüz makale eklenmemiş.
+                </div>
+            }
+        </div>
+
+        <!-- Footer -->
+        <div class="table-footer-row">
+            <span class="table-footer-info">
+                Toplam <span id="visibleCount">@Model?.Count</span> makale gösteriliyor
+            </span>
+            <a href="/Article/CreateArticle/" class="btn-add-article">
+                <i class="bi bi-plus-lg"></i>
+                Yeni Makale Ekle
+            </a>
+            <a href="/Article/CreateArticleWithOpenAI/" class="btn-add-article">
+                <i class="bi bi-plus-lg"></i>
+                AI ile Yeni Makale
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.getElementById('articleSearch')?.addEventListener('input', function () {
+        const q = this.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.article-row');
+        const noResult = document.getElementById('noResultRow');
+        let visible = 0;
+
+        rows.forEach(row => {
+            const title  = row.querySelector('.article-search-val')?.textContent.toLowerCase() || '';
+            const author = row.querySelector('.author-search-val')?.textContent.toLowerCase() || '';
+            const show   = title.includes(q) || author.includes(q);
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        noResult.style.display = visible === 0 && q.length > 0 ? '' : 'none';
+        document.getElementById('visibleCount').textContent = visible;
+    });
+
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+        new bootstrap.Tooltip(el);
+    });
+</script>

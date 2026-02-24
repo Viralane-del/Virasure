@@ -1,0 +1,16 @@
+﻿@model List<Article>
+<section id="recent-posts-4" class="widget widget_recent_entries">
+    <h2 class="widget-title">Son Yazılarımız</h2>
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li>
+                <a href="#">@item.Title</a>   
+                <div style="font-size:13px; color:#888; margin-top:4px;">
+                    <i class="far fa-calendar-alt" style="margin-right:5px;"></i>
+                    @item.CreatedDate.ToString("dd-MMM-yyyy")
+                </div>
+            </li>        
+        }
+    </ul>
+</section>

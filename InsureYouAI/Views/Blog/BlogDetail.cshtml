@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "BlogDetail";
+    Layout = "~/Views/Shared/_UILayout.cshtml";
+}
+
+<main>
+
+    <section class="inner-blog b-details-p pt-120 pb-120">
+        <div class="container">
+            <div class="row">
+
+                <!-- SOL TARAF -->
+                <div class="col-lg-8">
+                    <div class="blog-details-wrap">
+
+                        @await Component.InvokeAsync("BlogDetailContent", new { id = ViewBag.BlogId })
+
+                        @await Component.InvokeAsync("BlogDetailNextAndPrevPost", new { id = ViewBag.BlogId })
+
+                        @await Component.InvokeAsync("BlogDetailAboutAuthor", new { id = ViewBag.BlogId })
+
+                        @await Component.InvokeAsync("BlogDetailCommentList", new { id = ViewBag.BlogId })
+
+                        @await Html.PartialAsync("AddComment")
+
+                    </div>
+                </div>
+
+                <!-- SAĞ TARAF -->
+                <div class="col-sm-12 col-md-12 col-lg-4">
+                    <aside class="sidebar-widget">
+
+                        @await Html.PartialAsync("BlogSearch")
+
+                        @await Component.InvokeAsync("BlogSocialMedia")
+
+                        @await Component.InvokeAsync("BlogCategoryList")
+
+                        @await Component.InvokeAsync("BlogLast3RecentBlog")
+
+                        @await Component.InvokeAsync("BlogTags")
+
+                    </aside>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</main>

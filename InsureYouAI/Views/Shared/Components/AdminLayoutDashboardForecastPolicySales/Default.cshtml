@@ -1,0 +1,317 @@
+﻿@model List<PolicyForecastViewModel>
+@functions {
+    string GetEmoji(string policyType)
+    {
+        return policyType switch
+        {
+            "Egitim" => "🎓",
+            "Kasko" => "🚗",
+            "Konut" => "🏠",
+            "Saglik" => "🩺",
+            "Trafik" => "🚦",
+            "Evcil Hayvan" => "🐾",
+            "Seyahat" => "✈️",
+            _ => "📄"
+        };
+    }
+
+    string GetAccentColor(int index)
+    {
+        string[] colors = {
+            "#22c55e", "#3b82f6", "#f59e0b",
+            "#a855f7", "#ec4899", "#14b8a6", "#f97316"
+        };
+        return colors[index % colors.Length];
+    }
+}
+
+<style>
+    .forecast-card {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.02);
+        overflow: hidden;
+        position: relative;
+    }
+
+        .forecast-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent);
+        }
+
+    .forecast-header {
+        padding: 1.4rem 1.6rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .forecast-title-group {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
+
+    .forecast-title-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: rgba(34,197,94,0.1);
+        border: 1px solid rgba(34,197,94,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+    }
+
+    .forecast-title-text {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #e8e8f0;
+        letter-spacing: 0.01em;
+        margin: 0;
+    }
+
+    .forecast-period-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: rgba(34,197,94,0.1);
+        color: #4ade80;
+        border: 1px solid rgba(34,197,94,0.25);
+        padding: 3px 10px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .forecast-divider {
+        margin: 1.1rem 0 0;
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+    }
+
+    .forecast-list {
+        padding: 0.5rem 1.4rem 0.75rem;
+        max-height: 340px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+
+        .forecast-list::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .forecast-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .forecast-list::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+    .forecast-row {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        transition: opacity 0.2s;
+    }
+
+        .forecast-row:last-child {
+            border-bottom: none;
+        }
+
+        .forecast-row:hover {
+            opacity: 0.85;
+        }
+
+    .forecast-emoji-box {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+        transition: transform 0.2s;
+    }
+
+    .forecast-row:hover .forecast-emoji-box {
+        transform: scale(1.08);
+    }
+
+    .forecast-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .forecast-meta {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 0.45rem;
+    }
+
+    .forecast-name {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #d8d8e8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .forecast-stats {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+        margin-left: 0.5rem;
+    }
+
+    .forecast-count-badge {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.35);
+        background: rgba(255,255,255,0.05);
+        border-radius: 6px;
+        padding: 2px 7px;
+        white-space: nowrap;
+    }
+
+    .forecast-pct {
+        font-size: 0.78rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        min-width: 36px;
+        text-align: right;
+    }
+
+    .forecast-bar-track {
+        height: 5px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 99px;
+        overflow: hidden;
+    }
+
+    .forecast-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+        position: relative;
+    }
+
+        .forecast-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            background: rgba(255,255,255,0.35);
+            border-radius: 99px;
+            filter: blur(2px);
+        }
+
+    .forecast-footer {
+        padding: 0.85rem 1.6rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .forecast-footer-note {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.68rem;
+        color: rgba(255,255,255,0.25);
+    }
+
+        .forecast-footer-note i {
+            color: #4ade80;
+            font-size: 0.7rem;
+        }
+
+    .forecast-footer-link {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.3);
+        text-decoration: none;
+        letter-spacing: 0.04em;
+        transition: color 0.2s;
+    }
+
+        .forecast-footer-link:hover {
+            color: rgba(255,255,255,0.6);
+        }
+</style>
+
+<div class="col-12 col-lg-6 col-xl-6 d-flex">
+    <div class="forecast-card w-100">
+
+        <div class="forecast-header">
+            <div class="forecast-title-group">
+                <div class="forecast-title-icon">📈</div>
+                <h6 class="forecast-title-text">Tahmini Poliçe Satışları</h6>
+            </div>
+            <span class="forecast-period-badge">Mart 2026</span>
+        </div>
+
+        <hr class="forecast-divider" />
+
+        <div class="forecast-list">
+            @{
+                int idx = 0;
+            }
+            @foreach (var item in Model)
+            {
+                var color = GetAccentColor(idx);
+                var colorFaded = color + "55";
+                var barStyle = $"width:{item.Percentage}%; background: linear-gradient(90deg, {colorFaded}, {color});";
+
+                <div class="forecast-row">
+                    <div class="forecast-emoji-box">@GetEmoji(item.PolicyType)</div>
+                    <div class="forecast-info">
+                        <div class="forecast-meta">
+                            <span class="forecast-name">@item.PolicyType</span>
+                            <div class="forecast-stats">
+                                <span class="forecast-count-badge">@item.ForecastCount tahmin</span>
+                                <span class="forecast-pct" style="color:@color;">@item.Percentage%</span>
+                            </div>
+                        </div>
+                        <div class="forecast-bar-track">
+                            <div class="forecast-bar-fill" style="@barStyle"></div>
+                        </div>
+                    </div>
+                </div>
+
+                idx++;
+            }
+        </div>
+
+        <div class="forecast-footer">
+            <span class="forecast-footer-note">
+                <i class="bi bi-circle-fill" style="font-size:6px;"></i>
+                AI destekli tahmin modeli
+            </span>
+            <a href="#" class="forecast-footer-link">Raporu Gör →</a>
+        </div>
+
+    </div>
+</div>

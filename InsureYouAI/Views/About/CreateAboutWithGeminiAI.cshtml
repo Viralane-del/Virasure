@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewData["Title"] = "CreateAboutWithGeminiAI";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Gemini AI Hakkımda Yazı Örneği</h1>
+
+<hr />
+
+<div>
+    <h3>Oluşturulan Hakkımızda Yazısı:</h3>
+    <div class="alert alert-info">
+        @Html.Raw(ViewBag.value)
+    </div>
+</div>

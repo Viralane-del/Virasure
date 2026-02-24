@@ -1,0 +1,262 @@
+﻿<style>
+    .stat-card {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.02);
+        padding: 1.4rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        cursor: default;
+    }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
+        }
+
+        /* Renkli sol border aksan */
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 3px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .stat-card.accent-blue::before {
+            background: #3b82f6;
+            box-shadow: 0 0 12px rgba(59,130,246,0.5);
+        }
+
+        .stat-card.accent-green::before {
+            background: #22c55e;
+            box-shadow: 0 0 12px rgba(34,197,94,0.5);
+        }
+
+        .stat-card.accent-amber::before {
+            background: #f59e0b;
+            box-shadow: 0 0 12px rgba(245,158,11,0.5);
+        }
+
+        .stat-card.accent-purple::before {
+            background: #a855f7;
+            box-shadow: 0 0 12px rgba(168,85,247,0.5);
+        }
+
+    .stat-icon-wrap {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+        .stat-icon-wrap.icon-blue {
+            background: rgba(59,130,246,0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+
+        .stat-icon-wrap.icon-green {
+            background: rgba(34,197,94,0.12);
+            color: #4ade80;
+            border: 1px solid rgba(34,197,94,0.2);
+        }
+
+        .stat-icon-wrap.icon-amber {
+            background: rgba(245,158,11,0.12);
+            color: #fbbf24;
+            border: 1px solid rgba(245,158,11,0.2);
+        }
+
+        .stat-icon-wrap.icon-purple {
+            background: rgba(168,85,247,0.12);
+            color: #c084fc;
+            border: 1px solid rgba(168,85,247,0.2);
+        }
+
+    .stat-label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 0.3rem;
+    }
+
+    .stat-value {
+        font-size: 1.9rem;
+        font-weight: 700;
+        color: #f0f0f8;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .stat-trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 0.55rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 6px;
+    }
+
+    .trend-up {
+        background: rgba(34,197,94,0.1);
+        color: #4ade80;
+    }
+
+    .trend-flat {
+        background: rgba(245,158,11,0.1);
+        color: #fbbf24;
+    }
+
+    .trend-up-p {
+        background: rgba(168,85,247,0.1);
+        color: #c084fc;
+    }
+
+    .stat-trend i {
+        font-size: 0.75rem;
+    }
+
+    .stat-sublabel {
+        font-size: 0.68rem;
+        color: rgba(255,255,255,0.25);
+        margin-top: 0.2rem;
+    }
+
+    /* Dekoratif glow nokta */
+    .stat-glow {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        opacity: 0.06;
+        bottom: -20px;
+        right: -10px;
+        filter: blur(20px);
+    }
+
+    .stat-card.accent-blue .stat-glow {
+        background: #3b82f6;
+    }
+
+    .stat-card.accent-green .stat-glow {
+        background: #22c55e;
+    }
+
+    .stat-card.accent-amber .stat-glow {
+        background: #f59e0b;
+    }
+
+    .stat-card.accent-purple .stat-glow {
+        background: #a855f7;
+    }
+</style>
+
+<div class="row row-cols-1 row-cols-lg-2 row-cols-xl-4 g-3">
+
+    <!-- Makaleler -->
+    <div class="col">
+        <div class="stat-card accent-blue">
+            <div class="stat-glow"></div>
+            <div class="d-flex align-items-start justify-content-between mb-3">
+                <div>
+                    <div class="stat-label">Makalelerimiz</div>
+                    <div class="stat-value">@ViewBag.articles</div>
+                </div>
+                <div class="stat-icon-wrap icon-blue">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+            </div>
+            <span class="stat-trend trend-up">
+                <i class="bi bi-arrow-up-short"></i> 22.5%
+            </span>
+            <div class="stat-sublabel">Geçen haftaya göre artış</div>
+        </div>
+    </div>
+
+    <!-- Kategoriler -->
+    <div class="col">
+        <div class="stat-card accent-green">
+            <div class="stat-glow"></div>
+            <div class="d-flex align-items-start justify-content-between mb-3">
+                <div>
+                    <div class="stat-label">Kategorilerimiz</div>
+                    <div class="stat-value">@ViewBag.categories</div>
+                </div>
+                <div class="stat-icon-wrap icon-green">
+                    <i class="bi bi-tags"></i>
+                </div>
+            </div>
+            <span class="stat-trend trend-flat">
+                <i class="bi bi-arrow-right-short"></i> 13.2%
+            </span>
+            <div class="stat-sublabel">Geçen haftaya göre sabit</div>
+        </div>
+    </div>
+
+    <!-- Müşteriler -->
+    <div class="col">
+        <div class="stat-card accent-amber">
+            <div class="stat-glow"></div>
+            <div class="d-flex align-items-start justify-content-between mb-3">
+                <div>
+                    <div class="stat-label">Müşterilerimiz</div>
+                    <div class="stat-value">@ViewBag.users</div>
+                </div>
+                <div class="stat-icon-wrap icon-amber">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+            <span class="stat-trend trend-up">
+                <i class="bi bi-arrow-up-short"></i> 12.3%
+            </span>
+            <div class="stat-sublabel">Geçen haftaya göre artış</div>
+        </div>
+    </div>
+
+    <!-- Yorumlar -->
+    <div class="col">
+        <div class="stat-card accent-purple">
+            <div class="stat-glow"></div>
+            <div class="d-flex align-items-start justify-content-between mb-3">
+                <div>
+                    <div class="stat-label">Müşteri Yorumları</div>
+                    <div class="stat-value">@ViewBag.comments</div>
+                </div>
+                <div class="stat-icon-wrap icon-purple">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </div>
+            </div>
+            <span class="stat-trend trend-up-p">
+                <i class="bi bi-arrow-up-short"></i> 32.7%
+            </span>
+            <div class="stat-sublabel">Artış devam ediyor</div>
+        </div>
+    </div>
+
+</div>
+
